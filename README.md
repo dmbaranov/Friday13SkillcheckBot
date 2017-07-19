@@ -1,1 +1,1 @@
-The bot is underdevelopment and not usable at the moment
+The bot is under development and not usable at the moment
