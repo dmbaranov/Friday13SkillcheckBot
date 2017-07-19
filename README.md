@@ -1,0 +1,1 @@
+The bot is underdevelopment and not usable at the moment
