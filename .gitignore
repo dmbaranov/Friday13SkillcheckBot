@@ -1,4 +1,7 @@
 .idea
+__pycache__
+build
+dist
 Include
 Lib
 Scripts
@@ -7,3 +10,11 @@ f13game.jpg
 google.png
 pip-selfcheck.json
 screenshot.jpg
+screenshot.png
+f13_button_left.png
+f13_button_right.png
+google2.png
+f13_small_true.png
+f13_small_false.png
+f13_1.jpg
+main.spec
