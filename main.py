@@ -3,6 +3,7 @@ import pyHook
 import pythoncom
 import threading
 import time
+import math
 import win32api
 import win32con
 from PIL import ImageGrab
@@ -62,6 +63,7 @@ class SkillCheckBot:
     def __init__(self):
         self._left_box = None
         self._right_box = None
+        self._exit_time = 0
         self._is_activated = False
         self._hm = pyHook.HookManager()
         self._cond = threading.Lock()
@@ -108,7 +110,18 @@ class SkillCheckBot:
             elif event.Message == 257 and self._is_activated:
                 self.deactivate_bot()
         elif event.Key == 'q' or event.Key == 'Q':
-            os._exit(0)
+            if event.Message == 256:
+                if self._exit_time == 0:
+                    self._exit_time = time.time()
+            elif event.Message == 257:
+                now = time.time()
+                difference = math.ceil(now - self._exit_time)
+
+                if difference > 3:
+                    os._exit(0)
+
+                self._exit_time = 0
+
 
         return True
 
