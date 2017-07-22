@@ -1,10 +1,10 @@
 .idea
 __pycache__
-build
-Include
-Lib
-Scripts
-tcl
+/build
+/Include
+/Lib
+/Scripts
+/tcl
 f13game.jpg
 google.png
 pip-selfcheck.json
@@ -16,6 +16,6 @@ google2.png
 f13_small_true.png
 f13_small_false.png
 f13_1.jpg
-main.spec
+/main.spec
 cm_original.png
 opencv_python-3.2.0.7-cp27-cp27m-win32.whl
