@@ -1,7 +1,6 @@
 .idea
 __pycache__
 build
-dist
 Include
 Lib
 Scripts
@@ -19,3 +18,4 @@ f13_small_false.png
 f13_1.jpg
 main.spec
 cm_original.png
+opencv_python-3.2.0.7-cp27-cp27m-win32.whl
