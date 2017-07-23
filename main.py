@@ -129,13 +129,11 @@ class SkillCheckBot:
         return True
 
     def activate_bot(self):
-        print('activating')
         self._cond.release()
         self._is_activated = True
         return True
 
     def deactivate_bot(self):
-        print('deactivating')
         self._cond.acquire()
         self._is_activated = False
         return True
@@ -158,9 +156,11 @@ class SkillCheckBot:
 
                 # if R in RGB model is more than 200, then press button
                 if right_ss[1][0] > 200:
+                    print('Right click')
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
                 elif left_ss[1][0] > 200:
+                    print('Left click')
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 
