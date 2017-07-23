@@ -42,6 +42,7 @@ class SkillCheckBot:
         self._left_box = None
         self._right_box = None
         self._exit_time = 0
+        self._screenshot_time = 0.05
         self._is_activated = False
         self._hm = pyHook.HookManager()
         self._cond = threading.Lock()
@@ -64,6 +65,15 @@ class SkillCheckBot:
                 self._left_box = res[1]
                 self._right_box = res[2]
                 print('Mode has been set to: {0}x{1}. Have a nice game!'.format(res[0][0], res[0][1]))
+                ss_time = input('Enter screenshot time or press enter (default is 0.05): ')
+
+                if ss_time:
+                    try:
+                        self._screenshot_time = float(ss_time)
+                    except ValueError:
+                        print('Enter a number in ms!')
+                        os._exit(1)
+
                 break
         else:
             print('Your resolution is not supported. Make sure that Windows interface scaling is set to 100%')
@@ -109,9 +119,11 @@ class SkillCheckBot:
                     now = time.time()
                     difference = math.ceil(now - self._exit_time)
 
-                    if difference > 2:
+                    # If button was pressed for at least 2 seconds
+                    if difference >= 2:
                         os._exit(0)
             elif event.Message == 257:
+                # Reset the ext_time if user doesn't want to close the bot.
                 self._exit_time = 0
 
         return True
@@ -152,7 +164,7 @@ class SkillCheckBot:
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 
-            time.sleep(0.05)
+            time.sleep(self._screenshot_time)
 
 
 bot = SkillCheckBot()
