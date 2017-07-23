@@ -12,7 +12,6 @@ You have 2 options to use this bot: launch an application that I've built for yo
 
 * Download the files from this repository
 * If you want just run-and-use the bot, go to the dist/main folder and launch main.exe.
-  * Until this bot is under development, you have to choose your monitor's resolution manually.
 * Just enter the game and start repairing anything. You'll see the magic!
 * If you want to stop the bot, just press and hold `Q` for 3 seconds.
 
