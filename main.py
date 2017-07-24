@@ -65,11 +65,11 @@ class SkillCheckBot:
                 self._left_box = res[1]
                 self._right_box = res[2]
                 print('Mode has been set to: {0}x{1}. Have a nice game!'.format(res[0][0], res[0][1]))
-                ss_time = input('Enter screenshot time or press enter (default is 0.05): ')
+                ss_time = input('Enter screenshot time or press enter (default is 50ms): ')
 
                 if ss_time:
                     try:
-                        self._screenshot_time = float(ss_time)
+                        self._screenshot_time = float(ss_time / 1000)
                     except ValueError:
                         print('Enter a number in ms!')
                         os._exit(1)
@@ -77,6 +77,7 @@ class SkillCheckBot:
                 break
         else:
             print('Your resolution is not supported. Make sure that Windows interface scaling is set to 100%')
+            input('Press any key to continue...')
             os._exit(1)
 
     def pick_res(self):
@@ -88,6 +89,7 @@ class SkillCheckBot:
             chosen_index = int(input('\n\nEnter a number: '))
         except ValueError:
             print('That\'s not a number!')
+            input('Press any key to continue...')
             os._exit(1)
 
 
@@ -96,6 +98,7 @@ class SkillCheckBot:
             self._right_box = RESOLUTIONS[chosen_index - 1][2]
         except IndexError:
             print('Wrong number...')
+            input('Press any key to continue...')
             os._exit(1)
 
     def read_pressed_key(self, event):
