@@ -1,7 +1,5 @@
 import os
-# import pyHook
-from pyHook.HookManager import HookManager
-import pythoncom
+import keyboard
 import threading
 import time
 import math
@@ -45,102 +43,66 @@ class SkillCheckBot:
         self._exit_time = 0
         self._screenshot_time = 0.05
         self._is_activated = False
-        self._hm = HookManager()
         self._cond = threading.Lock()
         self._thread = threading.Thread(target=self.find_image)
 
     def start(self):
-        # self.pick_res()
         self.auto_pick_res()
         self._cond.acquire()
         self._thread.start()
-        self._hm.KeyAll = self.read_pressed_key
-        self._hm.HookKeyboard()
-        pythoncom.PumpMessages()
+        keyboard.hook_key('e', self.activate_bot, self.deactivate_bot)
+        keyboard.hook_key('q', self.on_exit_key_down, self.on_exit_key_release)
 
     def auto_pick_res(self):
         # Getting a resolution as a tuple and looking for it in a list of resolutions
         resolution = win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)
+
         for res in RESOLUTIONS:
             if res[0] == resolution:
                 self._left_box = res[1]
                 self._right_box = res[2]
                 print('Mode has been set to: {0}x{1}. Have a nice game!'.format(res[0][0], res[0][1]))
-                ss_time = int(input('Enter screenshot time or press enter (default is 50ms): '))
+                ss_time = input('Enter screenshot time or press enter (default is 50ms): ')
 
                 if ss_time:
                     try:
-                        self._screenshot_time = float(ss_time / 1000)
+                        self._screenshot_time = float(int(ss_time) / 1000)
                     except ValueError:
                         print('Enter a number in ms!')
+                        input('Press enter to exit...')
                         os._exit(1)
 
                 break
         else:
             print('Your resolution is not supported. Make sure that Windows interface scaling is set to 100%')
-            input('Press any key to continue...')
+            input('Press enter to exit...')
             os._exit(1)
-
-    def pick_res(self):
-        print('Choose a resolution of your screen: ')
-        for i, res in enumerate(RESOLUTIONS):
-            print('{0}. {1}'.format(i + 1, res[0]))
-
-        try:
-            chosen_index = int(input('\n\nEnter a number: '))
-        except ValueError:
-            print('That\'s not a number!')
-            input('Press any key to continue...')
-            os._exit(1)
-
-
-        try:
-            self._left_box = RESOLUTIONS[chosen_index - 1][1]
-            self._right_box = RESOLUTIONS[chosen_index - 1][2]
-        except IndexError:
-            print('Wrong number...')
-            input('Press any key to continue...')
-            os._exit(1)
-
-    def read_pressed_key(self, event):
-        """
-        Process all pressed buttons
-        :param event: pressed key event
-        :return: True
-        """
-        if event.Key == 'e' or event.Key == 'E':
-            #  Button down
-            if event.Message == 256 and not self._is_activated:
-                self.activate_bot()
-            #  Button up
-            elif event.Message == 257 and self._is_activated:
-                self.deactivate_bot()
-        elif event.Key == 'q' or event.Key == 'Q':
-            if event.Message == 256:
-                if self._exit_time == 0:
-                    self._exit_time = time.time()
-                else:
-                    now = time.time()
-                    difference = math.ceil(now - self._exit_time)
-
-                    # If button was pressed for at least 2 seconds
-                    if difference >= 2:
-                        os._exit(0)
-            elif event.Message == 257:
-                # Reset the ext_time if user doesn't want to close the bot.
-                self._exit_time = 0
-
-        return True
 
     def activate_bot(self):
-        self._cond.release()
-        self._is_activated = True
-        return True
+        if not self._is_activated:
+            self._cond.release()
+            self._is_activated = True
 
     def deactivate_bot(self):
-        self._cond.acquire()
-        self._is_activated = False
-        return True
+        if self._is_activated:
+            self._cond.acquire()
+            self._is_activated = False
+
+    def on_exit_key_down(self):
+        if self._exit_time == 0:
+            # Initial time for pressing and holding a button
+            self._exit_time = time.time()
+        else:
+            now = time.time()
+            difference = math.ceil(now - self._exit_time)
+
+            # If button was pressed for at least 2 seconds
+            if difference >= 2:
+                os._exit(0)
+
+    def on_exit_key_release(self):
+        # Reset the ext_time if user doesn't want to close the bot.
+        self._exit_time = 0
 
     def find_image(self):
         while True:
