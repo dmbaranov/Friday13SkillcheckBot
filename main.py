@@ -1,5 +1,6 @@
 import os
-import pyHook
+# import pyHook
+from pyHook.HookManager import HookManager
 import pythoncom
 import threading
 import time
@@ -44,7 +45,7 @@ class SkillCheckBot:
         self._exit_time = 0
         self._screenshot_time = 0.05
         self._is_activated = False
-        self._hm = pyHook.HookManager()
+        self._hm = HookManager()
         self._cond = threading.Lock()
         self._thread = threading.Thread(target=self.find_image)
 
@@ -65,7 +66,7 @@ class SkillCheckBot:
                 self._left_box = res[1]
                 self._right_box = res[2]
                 print('Mode has been set to: {0}x{1}. Have a nice game!'.format(res[0][0], res[0][1]))
-                ss_time = input('Enter screenshot time or press enter (default is 50ms): ')
+                ss_time = int(input('Enter screenshot time or press enter (default is 50ms): '))
 
                 if ss_time:
                     try:
