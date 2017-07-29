@@ -6,6 +6,7 @@ import math
 import win32api
 import win32con
 from PIL import ImageGrab
+from datetime import datetime
 
 
 # List of resolutions and coordinates for mouse icons
@@ -41,17 +42,27 @@ class SkillCheckBot:
         self._left_box = None
         self._right_box = None
         self._exit_time = 0
-        self._screenshot_time = 0.05
+        self._screenshot_time = 0.005
         self._is_activated = False
-        self._cond = threading.Lock()
+        self._lock = threading.Lock()
         self._thread = threading.Thread(target=self.find_image)
 
     def start(self):
         self.auto_pick_res()
-        self._cond.acquire()
+        # self.pick_ss_time()
+        self._lock.acquire()
         self._thread.start()
         keyboard.hook_key('e', self.activate_bot, self.deactivate_bot)
         keyboard.hook_key('q', self.on_exit_key_down, self.on_exit_key_release)
+
+    @staticmethod
+    def print_message(message, pre_exit=False):
+        now = datetime.now().strftime("%H:%M:%S")
+        print('[{0}] {1}'.format(now, message))
+
+        if pre_exit:
+            input('Press enter to continue...')
+            os._exit(0)
 
     def auto_pick_res(self):
         # Getting a resolution as a tuple and looking for it in a list of resolutions
@@ -61,31 +72,30 @@ class SkillCheckBot:
             if res[0] == resolution:
                 self._left_box = res[1]
                 self._right_box = res[2]
-                print('Mode has been set to: {0}x{1}. Have a nice game!'.format(res[0][0], res[0][1]))
-                ss_time = input('Enter screenshot time or press enter (default is 50ms): ')
-
-                if ss_time:
-                    try:
-                        self._screenshot_time = float(int(ss_time) / 1000)
-                    except ValueError:
-                        print('Enter a number in ms!')
-                        input('Press enter to exit...')
-                        os._exit(1)
-
+                self.print_message('Mode has been set to: {0}x{1}. Have a nice game!'.format(res[0][0], res[0][1]))
                 break
         else:
-            print('Your resolution is not supported. Make sure that Windows interface scaling is set to 100%')
-            input('Press enter to exit...')
-            os._exit(1)
+            self.print_message('Your resolution is not supported. Make sure that Windows interface scaling is set to 100%', pre_exit=True)
+
+    def pick_ss_time(self):
+        ss_time = input('Enter screenshot time or press enter (default is 50ms): ')
+
+        if ss_time:
+            try:
+                self._screenshot_time = float(int(ss_time) / 1000)
+            except ValueError:
+                self.print_message('Enter a number in ms!', pre_exit=True)
 
     def activate_bot(self):
         if not self._is_activated:
-            self._cond.release()
+            # Here we release the lock, so thread can be executed and method for finding images will run
+            self._lock.release()
             self._is_activated = True
 
     def deactivate_bot(self):
         if self._is_activated:
-            self._cond.acquire()
+            # Here the lock is acquired, so method for finding images can't be run
+            self._lock.acquire()
             self._is_activated = False
 
     def on_exit_key_down(self):
@@ -106,7 +116,7 @@ class SkillCheckBot:
 
     def find_image(self):
         while True:
-            with self._cond:
+            with self._lock:
                 # Taking a screenshot
                 right_ss = ImageGrab.grab(self._right_box)
                 left_ss = ImageGrab.grab(self._left_box)
@@ -122,13 +132,15 @@ class SkillCheckBot:
 
                 # if R in RGB model is more than 200, then press button
                 if right_ss[1][0] > 200:
-                    print('Right click')
+                    self.print_message('Right click')
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+                    time.sleep(0.5)
                 elif left_ss[1][0] > 200:
-                    print('Left click')
+                    self.print_message('Left click')
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+                    time.sleep(0.5)
 
             time.sleep(self._screenshot_time)
 
