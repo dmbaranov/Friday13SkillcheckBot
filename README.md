@@ -1,4 +1,4 @@
-# Friday the 13th the Game Skillcheck Bot (Alpha)
+# Friday the 13th the Game Skillcheck Bot (Beta)
 
 You don't need to complete skillchecks anymore, let the bot do it while you enjoy the game!  
 [Инструкция на русском языке](./READMErus.md)
